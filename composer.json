@@ -1,0 +1,23 @@
+{
+    "name": "shortcodes/model-relationship",
+    "description": "This is package that eases to manage model relationships automatically handling them by observers",
+    "type": "package",
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "license": "mit",
+    "authors": [
+        {
+            "name": "Roman Szymanski",
+            "email": "roman.szymanski@shortcodes.pl"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Shortcodes\\ModelRelationship\\": "src/"
+        }
+    }
+}
