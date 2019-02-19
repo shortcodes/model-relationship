@@ -23,7 +23,7 @@ class RelationObserver
         $relationObject = $relation['model']::find($object['id']);
         $relationName = $relation['name'];
         $model->$relationName()->associate($relationObject);
-        $model->withoutEvents(function ($model) {
+        $model->withoutTriggerEvents(function ($model) {
             $model->save();
         });
 
@@ -34,7 +34,7 @@ class RelationObserver
         $relationObject = new $relation['model']($object);
         $relationName = $relation['name'];
 
-        $model->withoutAnyEvents(function ($model) use ($relationName, $relationObject) {
+        $model->withoutTriggerEvents(function ($model) use ($relationName, $relationObject) {
             $model->$relationName()->save($relationObject);
         });
 

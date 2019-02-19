@@ -5,7 +5,7 @@ namespace Shortcodes\ModelRelationship\Traits;
 
 trait WithoutEvents
 {
-    public function withoutEvents(callable $process)
+    public function withoutTriggerEvents(callable $process)
     {
         $temp = $this->getEventDispatcher();
 
