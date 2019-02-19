@@ -29,6 +29,17 @@ class RelationObserver
 
     }
 
+    protected function saveHasOne($model, $relation, $object)
+    {
+        $relationObject = new $relation['model']($object);
+        $relationName = $relation['name'];
+
+        $model->withoutAnyEvents(function ($model) use ($relationName, $relationObject) {
+            $model->$relationName()->save($relationObject);
+        });
+
+    }
+
     protected function saveHasMany($model, $relation, $object)
     {
         $objectsCollection = collect($object);
