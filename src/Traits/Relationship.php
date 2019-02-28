@@ -16,6 +16,11 @@ trait Relationship
         static::observe(RelationObserver::class);
     }
 
+    public function getNotObservable()
+    {
+        return [];
+    }
+
     public function relationships()
     {
 

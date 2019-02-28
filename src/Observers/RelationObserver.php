@@ -10,7 +10,7 @@ class RelationObserver
         $relationships = $model->relationships();
 
         foreach (request()->all() as $k => $object) {
-            if (isset($relationships[$k])) {
+            if (isset($relationships[$k]) && !in_array($relationships[$k], $model->getNotObservable())) {
                 $method = "save" . $relationships[$k]['type'];
                 $relationships[$k]['name'] = $k;
                 $this->$method($model, $relationships[$k], $object);
