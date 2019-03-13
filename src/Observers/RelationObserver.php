@@ -34,7 +34,11 @@ class RelationObserver
         $relationObject = new $relation['model']($object);
         $relationName = $relation['name'];
 
-        $model->withoutTriggerEvents(function ($model) use ($relationName, $relationObject) {
+        $model->withoutTriggerEvents(function ($model) use ($relationName, $relationObject,$object) {
+            if($model->$relationName){
+                $model->$relationName->update($object);
+                return;
+            }
             $model->$relationName()->save($relationObject);
         });
 
