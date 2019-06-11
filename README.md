@@ -1,15 +1,19 @@
-# model-relationship
-This is package that eases to manage model relationships automatically handling them by observers
+# Package model-relationship
+This is package that eases to manage model relationships automatically handling them by trait
 
-# usage
-All you need to do is to use **Relationship** trait to your model
+# Usage
+All you need to do is to use **Relationship** trait to your model. All create and update methods will be substituted by custom trait action that handles relations.
 
-# idea
-When request to save or update model package automatically discover relations fields in request and put appropirate changes to database
+> Remember to add ```@relation``` annotation above all your relation methods
 
-# handled relation types by now
+# How it works
+
+When create or update action is triggered trait method automatically discover relations in provided attributes and manage to handle them acording to relation type.
+
+### Handled relation types by now
 
    - BelongsTo
+   - HasOne
    - HasMany
    - BelongsToMany
    
