@@ -119,7 +119,7 @@ trait Relationship
 
     private static function saveBelongsTo($model, $relation, $object)
     {
-        $relationObject = $relation['model']::find($object['id']);
+        $relationObject = $relation['model']::find(is_int($object) ? $object : $object['id']);
         $relationName = $relation['name'];
         $model->$relationName()->associate($relationObject);
         $model->save();
