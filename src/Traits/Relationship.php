@@ -3,6 +3,7 @@
 namespace Shortcodes\ModelRelationship\Traits;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionException;
 
@@ -106,9 +107,11 @@ trait Relationship
 
         foreach ($attributes as $k => $object) {
 
-            if (!isset($relationships[$k])) {
+            if (!isset($relationships[$k]) && !isset($relationships[Str::camel($k)])) {
                 continue;
             }
+
+            $k = Str::camel($k);
 
             $method = "save" . $relationships[$k]['type'];
             $relationships[$k]['name'] = $k;
