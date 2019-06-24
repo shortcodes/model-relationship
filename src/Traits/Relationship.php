@@ -69,7 +69,7 @@ trait Relationship
         return $createdModel;
     }
 
-    public function update(array $attributes = [], $useOriginal = false)
+    public function update(array $attributes = [], array $options = [], $useOriginal = false)
     {
         if (!$this->exists) {
             return false;
