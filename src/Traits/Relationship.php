@@ -93,7 +93,7 @@ trait Relationship
         });
 
 
-        $model->fireModelEvent('created');
+        $model->fireModelEvent('updated');
         $model->fireModelEvent('saved');
 
         return $model;
