@@ -104,8 +104,9 @@ trait Relationship
     {
         $relationships = $model->relations();
 
-
         foreach ($attributes as $k => $object) {
+
+            static::handleBelongsToManyManipulations($model, $relationships, $k, $object);
 
             if (!isset($relationships[$k]) && !isset($relationships[Str::camel($k)])) {
                 continue;
@@ -159,15 +160,44 @@ trait Relationship
         $model->$relationName()->createMany($objectsCollection->where('id', '=', null)->toArray());
     }
 
-    private static function saveBelongsToMany($model, $relation, $object)
+    private static function saveBelongsToMany($model, $relation, $object, $type = null)
     {
         $objectsCollection = collect($object);
         $relationName = $relation['name'];
-        $model->$relationName()->sync($objectsCollection->keyBy('id')->map(function ($item) {
-            return Arr::except($item, ['id']);
-        }));
 
+        $method = $type ?? 'sync';
+
+        $keys = $objectsCollection->keyBy('id')->map(function ($item) {
+            return Arr::except($item, ['id']);
+        });
+
+        if($method === 'detach'){
+            $keys = $keys->keys();
+        }
+
+        $query = $model->$relationName()->$method($keys);
     }
 
+    private static function handleBelongsToManyManipulations($model, $relationships, $k, $object)
+    {
+        if (strpos($k, 'attach') === false && strpos($k, 'detach') === false) {
+            return;
+        }
+
+        $relation = str_replace(['_attach', '_detach'], ['', ''], $k);
+        if (!isset($relationships[$relation]) && !isset($relationships[Str::camel($relation)])) {
+            return;
+        }
+
+        $type = strpos($k, 'attach') !== false ? 'attach' : 'detach';
+
+        $relation = Str::camel($relation);
+
+        $method = "save" . $relationships[$relation]['type'];
+        $relationships[$relation]['name'] = $relation;
+
+        static::$method($model, $relationships[$relation], $object, $type);
+
+    }
 
 }
