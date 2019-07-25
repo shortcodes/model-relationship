@@ -84,15 +84,12 @@ trait Relationship
         $this->fireModelEvent('updating');
 
         $model = static::withoutEvents(function () use ($attributes) {
-
             $this->fill($attributes)->save();
-
-            static::handleRelations($this, $attributes);
-
-            return $this->refresh();
         });
 
+        static::handleRelations($this, $attributes);
 
+        $model->refresh();
         $model->fireModelEvent('updated');
         $model->fireModelEvent('saved');
 
@@ -171,7 +168,7 @@ trait Relationship
             return Arr::except($item, ['id']);
         });
 
-        if($method === 'detach'){
+        if ($method === 'detach') {
             $keys = $keys->keys();
         }
 
