@@ -23,7 +23,7 @@ When create or update action is triggered trait method automatically discover re
 If you are dealing with `BelongsToMany` relationship and it is convinient to remove or add only few records you can pass relation with postfix like in this example
 
 * add clients with provided data
-```angular2
+```
 {
     "client_attach" : [ 
         {'id': 'int'}
