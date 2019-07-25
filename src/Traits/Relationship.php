@@ -56,13 +56,12 @@ trait Relationship
         $model->fireModelEvent('creating');
 
         $createdModel = static::withoutEvents(function () use ($model, $attributes) {
-
-            $model = tap($model)->save();
-            static::handleRelations($model, $attributes);
-
-            return $model->refresh();
+            return tap($model)->save();
         });
 
+        static::handleRelations($createdModel, $attributes);
+
+        $createdModel->refresh();
         $createdModel->fireModelEvent('created');
         $createdModel->fireModelEvent('saved');
 
@@ -83,17 +82,17 @@ trait Relationship
         $this->fireModelEvent('saving');
         $this->fireModelEvent('updating');
 
-        $model = static::withoutEvents(function () use ($attributes) {
+        static::withoutEvents(function () use ($attributes) {
             $this->fill($attributes)->save();
         });
 
         static::handleRelations($this, $attributes);
 
-        $model->refresh();
-        $model->fireModelEvent('updated');
-        $model->fireModelEvent('saved');
+        $this->refresh();
+        $this->fireModelEvent('updated');
+        $this->fireModelEvent('saved');
 
-        return $model;
+        return $this;
 
     }
 
