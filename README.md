@@ -178,7 +178,7 @@ Ids provided in referrals_detach array will be disassociated from article.
 
 Sometimes you need to sort `hasMany` relations by `position`. In that case all you need to do is to simply pass referrals array with ids in order you want. This can be possible if related object (in this case referrals) have to contain `position` column in database.
 
-    $article->update(['tags'=> [
+    $article->update(['referrals'=> [
         [
             'id'=>5
         ],
@@ -196,7 +196,7 @@ Sometimes you need to sort `hasMany` relations by `position`. In that case all y
 
 While adding `BelongsToMany` relation you should provide a collection of related objects ids
 
-     Article::create([...$someArticleAttributes,'referrals'=> [
+     Article::create([...$someArticleAttributes,'tags'=> [
             [
                 'id'=>5
             ],
@@ -268,7 +268,7 @@ All tags absent in array associated with article won't be affected.
 
 ##### Ordering Relation objects
 
-Smimilar to `hasMany` sometimes you need to sort `belongsToMany` associated relations by `position`. In that case all you need to do is to simply pass `tags` array with ids in order you want. This can be possible when there is `position` column in database on pivot table.
+Simimilar to `hasMany` sometimes you need to sort `belongsToMany` associated relations by `position`. In that case all you need to do is to simply pass `tags` array with ids in order you want. This can be possible when there is `position` column in database on pivot table.
 
     $article->update(['tags'=> [
         [
