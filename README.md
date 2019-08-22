@@ -148,7 +148,7 @@ Old referrals associated with article won't be affected.
 
 ##### Attach already existing object to relation.
 
-If you want to associate existing models like referrals without assigned relation id (null) you can use postfix notation `_attach
+If you want to associate existing models like referrals without assigned relation id (null) you can use postfix notation `_attach`
 
     $article->update(['referrals_attach'=> [
         [
@@ -160,7 +160,7 @@ Existing referrals will be associated with article.
 
 ##### Detach object from relation.
 
-If you want to disassociate existing models like referrals (set  foreign key to null) you can use postfix notation `_detach
+If you want to disassociate existing models like referrals (set  foreign key to null) you can use postfix notation `_detach`
 
     $article->update(['referrals_detach'=> [
         [
