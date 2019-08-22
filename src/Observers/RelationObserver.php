@@ -91,9 +91,42 @@ class RelationObserver
             return;
         }
 
+        if (strpos($relation, '_detach') !== false) {
+
+            $foreignKey = $model->getForeignKey();
+
+            $model->{str_replace('_detach', '', $relation)}()
+                ->whereIn('id', $objectsCollection->where('id', '!=', null)->pluck('id'))
+                ->update([$foreignKey => null]);
+
+            return;
+        }
+
+        if (strpos($relation, '_attach') !== false) {
+
+            $relatedModel = $model->{str_replace('_attach', '', $relation)}()->getRelated();
+            $relatedObjects = $relatedModel->find(collect($model->relationships[$relation])->pluck('id'));
+
+            $model->{str_replace('_attach', '', $relation)}()
+                ->saveMany($relatedObjects);
+
+            return;
+        }
+
         if (strpos($relation, '_add') !== false) {
 
-            $model->{str_replace('_add', '', $relation)}()->createMany($objectsCollection->toArray());
+            $objectsCollectionToCreate = $objectsCollection->where('id', null);
+            $objectsCollectionToAttach = $objectsCollection->where('id', '!=', null);
+
+            if ($objectsCollectionToCreate->isNotEmpty()) {
+                $model->{str_replace('_add', '', $relation)}()->createMany($objectsCollectionToCreate->toArray());
+            }
+
+            if ($objectsCollectionToAttach->isNotEmpty()) {
+                $relatedModel = $model->{str_replace('_add', '', $relation)}()->getRelated();
+                $relatedObjects = $relatedModel->find($objectsCollectionToAttach->pluck('id'));
+                $model->{str_replace('_add', '', $relation)}()->saveMany($relatedObjects);
+            }
             return;
         }
 
@@ -116,7 +149,7 @@ class RelationObserver
         }
 
         if ($model->$relation && isset($model->relationships[$relation]['id'])) {
-            $model->{$relation.'_id'} = $model->relationships[$relation]['id'];
+            $model->{$relation . '_id'} = $model->relationships[$relation]['id'];
             return;
         }
 

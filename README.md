@@ -132,6 +132,8 @@ If you do not want to pass all present referrals ids to referrals array (so they
 
 Old referrals associated with article won't be affected.
 
+> Note that if you provide already existing model (with id) to referrals_add array it will be attached which is described below.
+
 ##### Removing new object to relation.
 
 If you want to remove only one or few referrals without passing ids to referrals array (so they would not be deleted) you can use another postfix notation
@@ -143,6 +145,34 @@ If you want to remove only one or few referrals without passing ids to referrals
     ]);
 
 Old referrals associated with article won't be affected.
+
+##### Attach already existing object to relation.
+
+If you want to associate existing models like referrals without assigned relation id (null) you can use postfix notation `_attach
+
+    $article->update(['referrals_attach'=> [
+        [
+            'id'=>1
+        ]
+    ]);
+
+Existing referrals will be associated with article.
+
+##### Detach object from relation.
+
+If you want to disassociate existing models like referrals (set  foreign key to null) you can use postfix notation `_detach
+
+    $article->update(['referrals_detach'=> [
+        [
+            'id'=>1
+        ]
+    ]);
+
+Ids provided in referrals_detach array will be disassociated from article.
+
+> Remember that this feature require setting foreign key of relation to nullable in database
+
+> Remember that association will be performed even if related object is associated with another model.
 
 ##### Ordering Relation objects
 
