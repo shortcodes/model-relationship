@@ -9,6 +9,15 @@ use Shortcodes\ModelRelationship\Observers\RelationObserver;
 trait Relationship
 {
     public $relationships = [];
+    public $something = null;
+
+    public function initializeRelationship()
+    {
+        foreach ($this->relations() as $relation => $relationProperties) {
+            $relationFillables = $this->getRelationFillables($relation, $relationProperties['type']);
+            $this->fillable = array_merge($this->fillable, $relationFillables);
+        }
+    }
 
     public static function bootRelationship()
     {
@@ -17,8 +26,6 @@ trait Relationship
 
     public function relations()
     {
-        $model = new static;
-
         $relations = [];
 
         try {
@@ -35,7 +42,7 @@ trait Relationship
             }
 
             try {
-                $return = $method->invoke($model);
+                $return = $method->invoke($this);
 
                 $relations[$method->getName()] = [
                     'type' => (new ReflectionClass($return))->getShortName(),
@@ -47,5 +54,21 @@ trait Relationship
         }
 
         return $relations;
+    }
+
+    private function getRelationFillables($relation, $type)
+    {
+        $fillable = [$relation];
+
+        $relationPostfixes = [
+            'BelongsTo' => ['_id'],
+            'HasMany' => ['_delete', '_add', '_attach', '_detach'],
+            'HasOne' => ['_id'],
+            'BelongsToMany' => ['_attach', '_detach']
+        ];
+
+        return array_merge($fillable, array_map(function ($item) use ($relation) {
+            return $relation . $item;
+        }, $relationPostfixes[$type]));
     }
 }

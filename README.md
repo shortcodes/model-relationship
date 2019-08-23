@@ -284,8 +284,4 @@ Simimilar to `hasMany` sometimes you need to sort `belongsToMany` associated rel
 
 > Remember that absent ids will be removed
 
-### Using postfixes and relations
-
-Remember that all relations and relations with postfixes you use in attributes passed to `create` or `update` method have to be present in `$fillable` array associated with model that uses `Relationship` trait.
-
 Package is still under construction
