@@ -2,8 +2,7 @@
 
 namespace Shortcodes\ModelRelationship\Traits;
 
-use ReflectionClass;
-use ReflectionException;
+use Illuminate\Support\Str;
 use Shortcodes\ModelRelationship\Observers\RelationObserver;
 
 trait Relationship
@@ -13,7 +12,7 @@ trait Relationship
 
     public function initializeRelationship()
     {
-        foreach ($this->relations() as $relation => $relationProperties) {
+        foreach ($this->relations(true) as $relation => $relationProperties) {
             $relationFillables = $this->getRelationFillables($relation, $relationProperties['type']);
             $this->fillable = array_merge($this->fillable, $relationFillables);
         }
@@ -24,17 +23,19 @@ trait Relationship
         static::observe(RelationObserver::class);
     }
 
-    public function relations()
+    public function relations($onlyRelationTypes = false)
     {
         $relations = [];
 
-        try {
-            $reflectionClass = new ReflectionClass(get_called_class());
-        } catch (ReflectionException $e) {
-            return $relations;
-        }
+        foreach (get_class_methods(static::class) as $methodName) {
 
-        foreach ($reflectionClass->getMethods() as $method) {
+            try {
+                $method = new \ReflectionMethod($this, $methodName);
+            } catch (\ReflectionException $e) {
+                logger($e);
+                return $relations;
+            }
+
             $doc = $method->getDocComment();
 
             if (!$doc || strpos($doc, '@relation') === false) {
@@ -42,13 +43,21 @@ trait Relationship
             }
 
             try {
-                $return = $method->invoke($this);
 
-                $relations[$method->getName()] = [
-                    'type' => (new ReflectionClass($return))->getShortName(),
-                    'model' => (new ReflectionClass($return->getRelated()))->getName(),
+                $result = [
+                    'type' => $this->getRelationType($method),
                 ];
-            } catch (ReflectionException $e) {
+
+                if (!$onlyRelationTypes) {
+                    $result = [
+                        'type' => class_basename($this->$methodName()),
+                        'model' => get_class($this->$methodName()->getRelated())
+                    ];
+                }
+
+                $relations[$methodName] = $result;
+            } catch (\Exception $e) {
+                logger($e);
                 continue;
             }
         }
@@ -69,6 +78,23 @@ trait Relationship
 
         return array_merge($fillable, array_map(function ($item) use ($relation) {
             return $relation . $item;
-        }, $relationPostfixes[$type]));
+        }, $relationPostfixes[$type] ?? []));
+    }
+
+    private function getRelationType(\ReflectionMethod $method)
+    {
+        $functionBody = '';
+        $c = file($method->getFileName());
+        for ($i = $method->getStartLine(); $i <= $method->getEndLine(); $i++) {
+            $functionBody .= $c[$i - 1];
+        }
+
+        foreach (['belongsTo', 'hasMany', 'hasOne', 'belongsToMany'] as $item) {
+            if (strpos($functionBody, $item) !== false) {
+                return Str::ucfirst($item);
+            }
+        }
+
+        return null;
     }
 }
