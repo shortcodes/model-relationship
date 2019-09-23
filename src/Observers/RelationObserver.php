@@ -5,6 +5,7 @@ namespace Shortcodes\ModelRelationship\Observers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class RelationObserver
 {
@@ -22,8 +23,20 @@ class RelationObserver
 
     private function getRelationsFromAttributes(Model $model)
     {
-        $model->relationships = array_intersect_key($model->getAttributes(), $this->getRelationLikeProperties($model));
-        $model->setRawAttributes(array_diff_key($model->getAttributes(), $model->relationships));
+        $relaltionsWithoutCammelCase = $this->getRelationLikeProperties($model);
+        $model->relationships = $this->arrayKeysToCammelCase(array_intersect_key($model->getAttributes(), $relaltionsWithoutCammelCase));
+        $model->setRawAttributes(array_diff_key($model->getAttributes(), $relaltionsWithoutCammelCase));
+    }
+
+    private function arrayKeysToCammelCase($array)
+    {
+        $cammelCased = [];
+
+        foreach ($array as $k => $item) {
+            $cammelCased[Str::camel($k)] = $item;
+        }
+
+        return $cammelCased;
     }
 
     private function getRelationLikeProperties(Model $model)
@@ -31,7 +44,7 @@ class RelationObserver
         return Arr::where($model->getAttributes(), function ($value, $key) use ($model) {
 
             foreach ($model->relations() as $relationName => $modelRelation) {
-                if (strpos($key, $relationName) === 0) {
+                if (strpos(Str::camel($key), $relationName) === 0) {
                     return true;
                 }
             }
