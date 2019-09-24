@@ -44,7 +44,7 @@ class RelationObserver
         return Arr::where($model->getAttributes(), function ($value, $key) use ($model) {
 
             foreach ($model->relations() as $relationName => $modelRelation) {
-                if (strpos(Str::camel($key), $relationName) === 0) {
+                if (strpos(Str::camel($key), $relationName) === 0 && strpos($key, "_id" === false)) {
                     return true;
                 }
             }
