@@ -31,8 +31,15 @@ class RelationObserver
         return Arr::where($model->getAttributes(), function ($value, $key) use ($model) {
 
             foreach ($model->relations() as $relationName => $modelRelation) {
-                if (strpos($key, $relationName) === 0) {
+
+                if ($key === $relationName) {
                     return true;
+                }
+
+                foreach (['_id', '_delete', '_attach', '_detach', '_add'] as $postfix) {
+                    if (strpos($key, $relationName) === 0 && strpos($key, $postfix) !== false) {
+                        return true;
+                    }
                 }
             }
 
@@ -164,6 +171,7 @@ class RelationObserver
     private static function handleBelongsToMany(Model $model, $relation)
     {
 
+        $objectsCollection = collect($model->relationships[$relation]);
         $operation = 'sync';
 
         if (strpos($relation, '_attach') !== false) {
@@ -182,13 +190,17 @@ class RelationObserver
             foreach ($model->relationships[$relation] as $k => $item) {
                 $model->relationships[$relation][$k]['position'] = $position++;
             }
-        }
 
-        $objectsCollection = collect($model->relationships[$relation]);
+            $objectsCollection = collect($model->relationships[$relation]);
+        }
 
         $keys = $objectsCollection->keyBy('id')->map(function ($item) {
             return Arr::except($item, ['id']);
         });
+
+        if ($operation === 'detach') {
+            $keys = $objectsCollection->pluck('id')->toArray();
+        }
 
         $model->$relation()->$operation($keys);
     }

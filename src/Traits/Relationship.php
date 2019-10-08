@@ -89,7 +89,7 @@ trait Relationship
             $functionBody .= $c[$i - 1];
         }
 
-        foreach (['belongsTo', 'hasMany', 'hasOne', 'belongsToMany'] as $item) {
+        foreach (['belongsToMany','belongsTo', 'hasMany', 'hasOne'] as $item) {
             if (strpos($functionBody, $item) !== false) {
                 return Str::ucfirst($item);
             }
