@@ -177,6 +177,18 @@ class RelationObserver
         if (strpos($relation, '_attach') !== false) {
             $operation = 'attach';
             $relation = str_replace('_attach', '', $relation);
+
+            if ($objectsCollection->isEmpty()) {
+                return;
+            }
+
+            $idsAlreadyAttached = $model->$relation()->whereIn($model->$relation()->getQualifiedRelatedPivotKeyName(), $objectsCollection->pluck('id'))->pluck($model->$relation()->getQualifiedRelatedPivotKeyName());
+
+            if ($idsAlreadyAttached->isNotEmpty()) {
+                $objectsCollection = $objectsCollection->reject(function ($item) use ($idsAlreadyAttached, $objectsCollection) {
+                    return in_array($item['id'], $idsAlreadyAttached->toArray());
+                });
+            }
         }
 
         if (strpos($relation, '_detach') !== false) {
