@@ -182,7 +182,7 @@ class RelationObserver
                 return;
             }
 
-            $idsAlreadyAttached = $model->$relation()->whereIn($model->$relation()->getQualifiedRelatedPivotKeyName(), $objectsCollection->pluck('id'))->pluck($model->$relation()->getQualifiedRelatedPivotKeyName());
+            $idsAlreadyAttached = $model->$relation()->whereIn($model->$relation()->getQualifiedRelatedPivotKeyName(), $objectsCollection->pluck('id'))->pluck('id');
 
             if ($idsAlreadyAttached->isNotEmpty()) {
                 $objectsCollection = $objectsCollection->reject(function ($item) use ($idsAlreadyAttached, $objectsCollection) {
