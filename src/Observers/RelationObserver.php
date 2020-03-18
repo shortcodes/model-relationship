@@ -10,6 +10,8 @@ class RelationObserver
 {
     public function saving(Model $model)
     {
+        $model->setFillable();
+
         $this->getRelationsFromAttributes($model);
         $this->handleRelation($model, 'saving');
     }
@@ -181,7 +183,6 @@ class RelationObserver
             if ($objectsCollection->isEmpty()) {
                 return;
             }
-
 
             $idsAlreadyAttached = $model->$relation()->whereIn($model->$relation()->getQualifiedRelatedPivotKeyName(), $objectsCollection->pluck('id'))->pluck($model->$relation()->getTable() . '.' . $model->$relation()->getRelatedPivotKeyName());
 

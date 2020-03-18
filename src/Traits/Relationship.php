@@ -10,7 +10,7 @@ trait Relationship
     public $relationships = [];
     public $something = null;
 
-    public function initializeRelationship()
+    public function setFillable()
     {
         foreach ($this->relations(true) as $relation => $relationProperties) {
             $relationFillables = $this->getRelationFillables($relation, $relationProperties['type']);
