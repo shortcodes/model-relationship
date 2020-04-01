@@ -10,9 +10,6 @@ class RelationObserver
 {
     public function saving(Model $model)
     {
-        $model->setFillable();
-        $model->fill(request()->all());
-
         $this->getRelationsFromAttributes($model);
         $this->handleRelation($model, 'saving');
     }

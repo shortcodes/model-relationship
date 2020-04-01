@@ -10,9 +10,9 @@ trait Relationship
     public $relationships = [];
     public $something = null;
 
-    public function setFillable()
+    public function initializeRelationship()
     {
-        foreach ($this->relations(true) as $relation => $relationProperties) {
+        foreach (($this->relationTypes ?? $this->relations(true)) as $relation => $relationProperties) {
             $relationFillables = $this->getRelationFillables($relation, $relationProperties['type']);
             $this->fillable = array_merge($this->fillable, $relationFillables);
         }
@@ -89,7 +89,7 @@ trait Relationship
             $functionBody .= $c[$i - 1];
         }
 
-        foreach (['belongsToMany','belongsTo', 'hasMany', 'hasOne'] as $item) {
+        foreach (['belongsToMany', 'belongsTo', 'hasMany', 'hasOne'] as $item) {
             if (strpos($functionBody, $item) !== false) {
                 return Str::ucfirst($item);
             }
