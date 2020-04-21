@@ -51,7 +51,7 @@ class RelationObserver
     {
         $relationToHandle = [
             'saving' => ['BelongsTo'],
-            'saved' => ['HasMany', 'BelongsToMany', 'HasOne'],
+            'saved' => ['HasMany', 'BelongsToMany', 'HasOne', 'MorphMany'],
         ];
 
         foreach ($model->relationships as $relationName => $relationValue) {
@@ -61,6 +61,18 @@ class RelationObserver
                     $method = 'handle' . $availableRelationDate['type'];
                     $this->$method($model, $relationName);
                 }
+            }
+        }
+    }
+
+    private function handleMorphMany(Model $model, $relation)
+    {
+        if (Schema::hasColumn($model->$relation()->getModel()->getTable(), 'position')) {
+            $position = 0;
+            $modelClass = $model->$relation()->getModel();
+
+            foreach ($model->relationships[$relation] as $k => $item) {
+                $modelClass::find($item['id'])->forceFill(['position' => $position++])->save();
             }
         }
     }
