@@ -177,7 +177,7 @@ class RelationObserver
             return;
         }
 
-        $model->$relation()->update($model->relationships[$relation]);
+        $model->$relation->update($model->relationships[$relation]);
     }
 
     private static function handleBelongsToMany(Model $model, $relation)
