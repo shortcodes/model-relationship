@@ -172,6 +172,15 @@ class RelationObserver
             return;
         }
 
+        if ($model->$relation && !$model->relationships[$relation]) {
+            $model->$relation->delete();
+            return;
+        }
+
+        if (!$model->$relation && !$model->relationships[$relation]) {
+            return;
+        }
+
         if (!$model->$relation) {
             $model->$relation()->create($model->relationships[$relation]);
             return;
