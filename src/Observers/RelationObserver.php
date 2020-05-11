@@ -75,6 +75,15 @@ class RelationObserver
                 $modelClass::find($item['id'])->forceFill(['position' => $position++])->save();
             }
         }
+
+        if (Schema::hasColumn($model->$relation()->getModel()->getTable(), 'active')) {
+
+            $modelClass = $model->$relation()->getModel();
+
+            foreach ($model->relationships[$relation] as $k => $item) {
+                $modelClass::find($item['id'])->forceFill(['active' => $item['active']])->save();
+            }
+        }
     }
 
     private function handleBelongsTo(Model $model, $relation)
